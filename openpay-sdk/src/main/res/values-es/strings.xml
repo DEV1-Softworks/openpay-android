@@ -1,0 +1,23 @@
+<resources>
+    <!-- Etiquetas de campos -->
+    <string name="openpay_holder_name_label">Nombre del titular</string>
+    <string name="openpay_card_number_label">Número de tarjeta</string>
+    <string name="openpay_expiration_label">Fecha de vencimiento</string>
+    <string name="openpay_expiration_placeholder">MM/AA</string>
+    <string name="openpay_security_code_label">Código de seguridad</string>
+
+    <!-- Errores de validación -->
+    <string name="openpay_error_holder_name">Escribe el nombre como aparece en la tarjeta</string>
+    <string name="openpay_error_card_number">Escribe un número de tarjeta válido</string>
+    <string name="openpay_error_expiration">Escribe una fecha de vencimiento válida</string>
+    <string name="openpay_error_security_code">Escribe el código de seguridad al reverso de la tarjeta</string>
+
+    <!-- Accesibilidad -->
+    <string name="openpay_brand_description">Marca de tarjeta detectada: %1$s</string>
+    <string name="openpay_brand_unknown">desconocida</string>
+    <string name="openpay_security_code_hidden_description">El código de seguridad se oculta mientras escribes</string>
+    <string name="openpay_form_description">Formulario de tarjeta de pago</string>
+
+    <!-- Acciones -->
+    <string name="openpay_pay_button">Guardar tarjeta</string>
+</resources>
