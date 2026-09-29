@@ -1,5 +1,6 @@
 package mx.dev1.openpay.sdk
 
+import android.app.Activity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -7,11 +8,13 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import mx.dev1.openpay.sdk.antifraud.DeviceSessionCollector
 import mx.dev1.openpay.sdk.core.OpenpayConfig
 import mx.dev1.openpay.sdk.core.OpenpayCountry
 import mx.dev1.openpay.sdk.core.OpenpayEnvironment
 import mx.dev1.openpay.sdk.core.OpenpayException
 import mx.dev1.openpay.sdk.di.OpenpayKoinContext
+import mx.dev1.openpay.sdk.di.openpayAntifraudModule
 import mx.dev1.openpay.sdk.di.openpayDataModule
 import mx.dev1.openpay.sdk.domain.model.Card
 import mx.dev1.openpay.sdk.domain.model.Token
@@ -37,6 +40,7 @@ import mx.dev1.openpay.sdk.domain.usecase.CreateTokenUseCase
  */
 class Openpay internal constructor(
     private val createTokenUseCase: CreateTokenUseCase,
+    private val deviceSessionCollector: DeviceSessionCollector,
     backgroundDispatcher: CoroutineDispatcher,
     private val callbackDispatcher: CoroutineDispatcher,
 ) {
@@ -44,6 +48,7 @@ class Openpay internal constructor(
     /** Creates the SDK from a full [OpenpayConfig]. */
     constructor(config: OpenpayConfig) : this(
         createTokenUseCase = bootDependencies(config),
+        deviceSessionCollector = OpenpayKoinContext.koin.get(),
         backgroundDispatcher = Dispatchers.IO,
         callbackDispatcher = Dispatchers.Main.immediate,
     )
@@ -96,6 +101,14 @@ class Openpay internal constructor(
     }
 
     /**
+     * Starts the antifraud device fingerprint collection and returns the
+     * device session id. Send this id to your backend together with the
+     * token when creating the charge. Must be called from the main thread.
+     */
+    fun setupDeviceSession(activity: Activity): String =
+        deviceSessionCollector.collect(activity)
+
+    /**
      * Cancels in-flight operations and releases the SDK dependency graph.
      * Call it when the SDK is no longer needed (for example on logout).
      */
@@ -109,7 +122,7 @@ class Openpay internal constructor(
         fun bootDependencies(config: OpenpayConfig): CreateTokenUseCase {
             OpenpayKoinContext.start(
                 config = config,
-                extraModules = listOf(openpayDataModule()),
+                extraModules = listOf(openpayDataModule(), openpayAntifraudModule()),
             )
             return OpenpayKoinContext.koin.get()
         }

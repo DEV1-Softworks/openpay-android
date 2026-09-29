@@ -3,9 +3,11 @@ package mx.dev1.openpay.sdk
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
+import android.app.Activity
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import mx.dev1.openpay.sdk.antifraud.DeviceSessionCollector
 import mx.dev1.openpay.sdk.core.OpenpayException
 import mx.dev1.openpay.sdk.domain.model.Card
 import mx.dev1.openpay.sdk.domain.model.Token
@@ -33,8 +35,11 @@ class OpenpayTest {
         securityCode = "110",
     )
 
+    private val deviceSessionCollector: DeviceSessionCollector = mock()
+
     private fun openpayWith(dispatcher: kotlinx.coroutines.CoroutineDispatcher) = Openpay(
         createTokenUseCase = CreateTokenUseCase(tokenRepository, frozenClock),
+        deviceSessionCollector = deviceSessionCollector,
         backgroundDispatcher = dispatcher,
         callbackDispatcher = dispatcher,
     )
@@ -84,6 +89,15 @@ class OpenpayTest {
 
         assertEquals(expectedToken, receivedToken)
         assertNull(receivedError)
+    }
+
+    @Test
+    fun `setupDeviceSession delegates to the device session collector`() = runTest {
+        val activity: Activity = mock()
+        whenever(deviceSessionCollector.collect(activity)).thenReturn("device-session-id")
+        val openpay = openpayWith(StandardTestDispatcher(testScheduler))
+
+        assertEquals("device-session-id", openpay.setupDeviceSession(activity))
     }
 
     @Test
