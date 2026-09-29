@@ -24,4 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Openpay"
 include(":app")
+include(":openpay-sdk")
  
