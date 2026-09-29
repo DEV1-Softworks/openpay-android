@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import mx.dev1.openpay.sdk.R
 import mx.dev1.openpay.sdk.domain.model.Card
 import mx.dev1.openpay.sdk.domain.validation.CardField
+import mx.dev1.openpay.sdk.i18n.OpenpayLocalized
 import mx.dev1.openpay.sdk.ui.state.OpenpayCardFormState
 import mx.dev1.openpay.sdk.ui.state.rememberOpenpayCardFormState
 
@@ -30,14 +31,16 @@ import mx.dev1.openpay.sdk.ui.state.rememberOpenpayCardFormState
  *
  * @param onCardValidated invoked with a valid [Card] when the user submits
  * and every field passes validation.
+ * @param submitButtonText optional replacement for the submit button label;
+ * when null the localized SDK text is used.
  */
 @Composable
 fun OpenpayCardForm(
     onCardValidated: (Card) -> Unit,
     modifier: Modifier = Modifier,
     state: OpenpayCardFormState = rememberOpenpayCardFormState(),
-    submitButtonText: String = stringResource(R.string.openpay_pay_button),
-) {
+    submitButtonText: String? = null,
+) = OpenpayLocalized {
     val formDescription = stringResource(R.string.openpay_form_description)
 
     Column(
@@ -83,7 +86,7 @@ fun OpenpayCardForm(
                 .heightIn(min = 48.dp)
                 .testTag(OpenpayFormTags.SUBMIT_BUTTON),
         ) {
-            Text(submitButtonText)
+            Text(submitButtonText ?: stringResource(R.string.openpay_pay_button))
         }
     }
 }
