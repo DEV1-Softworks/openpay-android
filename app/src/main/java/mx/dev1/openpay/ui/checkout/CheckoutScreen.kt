@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -57,6 +58,9 @@ fun CheckoutScreen(viewModel: CheckoutViewModel = koinViewModel()) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
+                // Shrinks the scrollable viewport when the keyboard opens so the
+                // focused field can always scroll into view above the IME.
+                .imePadding()
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
