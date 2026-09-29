@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import mx.dev1.openpay.sdk.R
 import mx.dev1.openpay.sdk.domain.validation.CardBrand
+import mx.dev1.openpay.sdk.i18n.OpenpayLocalized
 import mx.dev1.openpay.sdk.ui.input.CardNumberVisualTransformation
 import mx.dev1.openpay.sdk.ui.input.ExpirationVisualTransformation
 
@@ -37,18 +38,20 @@ fun OpenpayHolderNameField(
     isError: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag(OpenpayFormTags.HOLDER_NAME_FIELD),
-        label = { Text(stringResource(R.string.openpay_holder_name_label)) },
-        isError = isError,
-        supportingText = errorSupportingText(isError, R.string.openpay_error_holder_name),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-    )
+    OpenpayLocalized {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = modifier
+                .fillMaxWidth()
+                .testTag(OpenpayFormTags.HOLDER_NAME_FIELD),
+            label = { Text(stringResource(R.string.openpay_holder_name_label)) },
+            isError = isError,
+            supportingText = errorSupportingText(isError, R.string.openpay_error_holder_name),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        )
+    }
 }
 
 @Composable
@@ -59,20 +62,22 @@ fun OpenpayCardNumberField(
     isError: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag(OpenpayFormTags.CARD_NUMBER_FIELD),
-        label = { Text(stringResource(R.string.openpay_card_number_label)) },
-        isError = isError,
-        supportingText = errorSupportingText(isError, R.string.openpay_error_card_number),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        visualTransformation = CardNumberVisualTransformation(),
-        trailingIcon = { OpenpayBrandBadge(brand) },
-    )
+    OpenpayLocalized {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = modifier
+                .fillMaxWidth()
+                .testTag(OpenpayFormTags.CARD_NUMBER_FIELD),
+            label = { Text(stringResource(R.string.openpay_card_number_label)) },
+            isError = isError,
+            supportingText = errorSupportingText(isError, R.string.openpay_error_card_number),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            visualTransformation = CardNumberVisualTransformation(),
+            trailingIcon = { OpenpayBrandBadge(brand) },
+        )
+    }
 }
 
 @Composable
@@ -82,20 +87,22 @@ fun OpenpayExpirationField(
     isError: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag(OpenpayFormTags.EXPIRATION_FIELD),
-        label = { Text(stringResource(R.string.openpay_expiration_label)) },
-        placeholder = { Text(stringResource(R.string.openpay_expiration_placeholder)) },
-        isError = isError,
-        supportingText = errorSupportingText(isError, R.string.openpay_error_expiration),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        visualTransformation = ExpirationVisualTransformation(),
-    )
+    OpenpayLocalized {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = modifier
+                .fillMaxWidth()
+                .testTag(OpenpayFormTags.EXPIRATION_FIELD),
+            label = { Text(stringResource(R.string.openpay_expiration_label)) },
+            placeholder = { Text(stringResource(R.string.openpay_expiration_placeholder)) },
+            isError = isError,
+            supportingText = errorSupportingText(isError, R.string.openpay_error_expiration),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            visualTransformation = ExpirationVisualTransformation(),
+        )
+    }
 }
 
 @Composable
@@ -105,21 +112,23 @@ fun OpenpaySecurityCodeField(
     isError: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val hiddenCodeDescription = stringResource(R.string.openpay_security_code_hidden_description)
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag(OpenpayFormTags.SECURITY_CODE_FIELD)
-            .semantics { contentDescription = hiddenCodeDescription },
-        label = { Text(stringResource(R.string.openpay_security_code_label)) },
-        isError = isError,
-        supportingText = errorSupportingText(isError, R.string.openpay_error_security_code),
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-        visualTransformation = PasswordVisualTransformation(),
-    )
+    OpenpayLocalized {
+        val hiddenCodeDescription = stringResource(R.string.openpay_security_code_hidden_description)
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = modifier
+                .fillMaxWidth()
+                .testTag(OpenpayFormTags.SECURITY_CODE_FIELD)
+                .semantics { contentDescription = hiddenCodeDescription },
+            label = { Text(stringResource(R.string.openpay_security_code_label)) },
+            isError = isError,
+            supportingText = errorSupportingText(isError, R.string.openpay_error_security_code),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+            visualTransformation = PasswordVisualTransformation(),
+        )
+    }
 }
 
 /**
