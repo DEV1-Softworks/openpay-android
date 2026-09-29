@@ -1,9 +1,19 @@
 package mx.dev1.openpay.sdk.core
 
+import mx.dev1.openpay.sdk.domain.validation.CardValidationResult
+
 /**
  * Base type for every error surfaced by the Openpay SDK.
  */
 sealed class OpenpayException(message: String, cause: Throwable? = null) : Exception(message, cause) {
+
+    /**
+     * The card failed local validation before any network call was made.
+     * [validationResult] lists every field that must be corrected.
+     */
+    class ValidationError(
+        val validationResult: CardValidationResult,
+    ) : OpenpayException("The card data is not valid: ${validationResult.invalidFields}")
 
     /**
      * The Openpay API rejected the request. Mirrors the error body documented at
