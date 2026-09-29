@@ -1,4 +1,12 @@
 <resources>
-    <string name="app_name">Openpay</string>
-    <string name="sdk_version_label">Openpay SDK %1$s</string>
+    <string name="app_name">Openpay Sample</string>
+    <string name="sample_configuration_title">Merchant configuration</string>
+    <string name="sample_merchant_id_label">Merchant ID</string>
+    <string name="sample_public_key_label">Public API key</string>
+    <string name="sample_production_mode">Production mode</string>
+    <string name="sample_language_title">SDK language</string>
+    <string name="sample_language_automatic">Auto</string>
+    <string name="sample_start_device_session">Start antifraud device session</string>
+    <string name="sample_device_session_result">Device session: %1$s</string>
+    <string name="sample_token_created">Token created: %1$s</string>
 </resources>
