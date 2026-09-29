@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Openpay</string>
+    <string name="sdk_version_label">Openpay SDK %1$s</string>
 </resources>
