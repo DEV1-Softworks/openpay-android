@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    `maven-publish`
+    signing
 }
 
 android {
@@ -45,6 +47,82 @@ android {
         unitTests {
             isIncludeAndroidResources = true
         }
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = project.property("GROUP").toString()
+            artifactId = "openpay-sdk"
+            version = project.property("VERSION_NAME").toString()
+
+            afterEvaluate {
+                from(components["release"])
+            }
+
+            pom {
+                name.set("Openpay Android SDK")
+                description.set(
+                    "Kotlin-first Openpay SDK for Android: card tokenization, validation, " +
+                        "antifraud device sessions and Compose UI components."
+                )
+                url.set("https://github.com/DEV1-Softworks/openpay-android")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("dev1-softworks")
+                        name.set("DEV1 Softworks")
+                        url.set("https://github.com/DEV1-Softworks")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/DEV1-Softworks/openpay-android.git")
+                    developerConnection.set("scm:git:ssh://github.com/DEV1-Softworks/openpay-android.git")
+                    url.set("https://github.com/DEV1-Softworks/openpay-android")
+                }
+            }
+        }
+    }
+
+    repositories {
+        // Remote repository configured entirely through environment variables so
+        // credentials never live in the build. Skipped when the URL is absent
+        // (publishToMavenLocal keeps working without any setup).
+        val remoteRepositoryUrl = System.getenv("MAVEN_REPOSITORY_URL")
+        if (remoteRepositoryUrl != null) {
+            maven {
+                name = "remote"
+                url = uri(remoteRepositoryUrl)
+                credentials {
+                    username = System.getenv("MAVEN_REPOSITORY_USERNAME")
+                    password = System.getenv("MAVEN_REPOSITORY_PASSWORD")
+                }
+            }
+        }
+    }
+}
+
+signing {
+    // In-memory PGP signing, enabled only when the key material is provided
+    // (for example on the release CI). Local builds stay unsigned.
+    val signingKey = System.getenv("SIGNING_KEY")
+    val signingPassword = System.getenv("SIGNING_PASSWORD")
+    if (signingKey != null) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications)
     }
 }
 
