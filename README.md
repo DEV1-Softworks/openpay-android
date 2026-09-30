@@ -81,6 +81,7 @@ module is a runnable sample of every feature.
 | UI components & accessibility | [en](docs/en/ui-components.md) | [es](docs/es/ui-components.md) | [fr](docs/fr/ui-components.md) | [pt](docs/pt/ui-components.md) |
 | Internationalization | [en](docs/en/internationalization.md) | [es](docs/es/internationalization.md) | [fr](docs/fr/internationalization.md) | [pt](docs/pt/internationalization.md) |
 | Contributing | [en](docs/en/contributing.md) | [es](docs/es/contributing.md) | [fr](docs/fr/contributing.md) | [pt](docs/pt/contributing.md) |
+| Continuous integration | [en](docs/en/ci.md) | [es](docs/es/ci.md) | [fr](docs/fr/ci.md) | [pt](docs/pt/ci.md) |
 
 ## Repository layout
 
