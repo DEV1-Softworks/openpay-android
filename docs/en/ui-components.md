@@ -21,6 +21,28 @@ detection), MM/YY expiration and masked security code, plus a submit
 button. `onCardValidated` fires **only** when every field passes
 validation; invalid fields are highlighted with translated error messages.
 
+### Implementing with the native form
+
+The callback hands you a validated `Card`; tokenize it and send the token
+id to your backend:
+
+```kotlin
+val scope = rememberCoroutineScope()
+
+OpenpayCardForm(
+    onCardValidated = { card ->
+        scope.launch {
+            openpay.createToken(card)
+                .onSuccess { token -> /* send token.tokenId to your backend */ }
+                .onFailure { error -> /* show the error */ }
+        }
+    },
+)
+```
+
+See [Getting started](getting-started.md) for how to build the `openpay`
+instance with your merchant id and public key.
+
 ### Controlling the state yourself
 
 ```kotlin
@@ -38,16 +60,60 @@ OpenpayCardForm(
 For security, the form state is **not** persisted across process death —
 card data never touches disk.
 
-## Individual fields
+## Implementing with custom inputs
 
-Each field is public and can be composed into your own layout:
+Each field is public and can be composed into your own layout while
+keeping the SDK's formatting and validation:
 
 - `OpenpayHolderNameField`
-- `OpenpayCardNumberField` — grouped formatting (4-4-4-4, Amex 4-6-5) and a
-  brand badge
+- `OpenpayCardNumberField` — grouped formatting (4-4-4-4, Amex 4-6-5)
 - `OpenpayExpirationField` — MM/YY visual formatting over MMYY digits
 - `OpenpaySecurityCodeField` — masked input, brand-aware length (4 for
   Amex, 3 otherwise)
+
+Wire them to `rememberOpenpayCardFormState()`, which keeps digits-only
+values, detects the brand and validates every field:
+
+```kotlin
+val formState = rememberOpenpayCardFormState()
+
+Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    OpenpayCardPreview(              // optional: brand colors and logo included
+        holderName = formState.holderName,
+        cardNumber = formState.cardNumber,
+        expiration = formState.expiration,
+    )
+    OpenpayHolderNameField(
+        value = formState.holderName,
+        onValueChange = formState::updateHolderName,
+        isError = formState.isFieldInvalid(CardField.HOLDER_NAME),
+    )
+    OpenpayCardNumberField(
+        value = formState.cardNumber,
+        onValueChange = formState::updateCardNumber,
+        isError = formState.isFieldInvalid(CardField.CARD_NUMBER),
+    )
+    OpenpayExpirationField(
+        value = formState.expiration,
+        onValueChange = formState::updateExpiration,
+        isError = formState.isFieldInvalid(CardField.EXPIRATION),
+    )
+    OpenpaySecurityCodeField(
+        value = formState.securityCode,
+        onValueChange = formState::updateSecurityCode,
+        isError = formState.isFieldInvalid(CardField.SECURITY_CODE),
+    )
+    Button(onClick = {
+        formState.validate()?.let { card -> /* createToken(card) as above */ }
+    }) {
+        Text("Pay")
+    }
+}
+```
+
+`formState.validate()` returns the `Card` ready for tokenization when
+every field is valid; otherwise it returns null and flags the failing
+fields so `isFieldInvalid` highlights them.
 
 ## Brand identity on the card preview
 
@@ -55,7 +121,7 @@ The live card preview reacts to the detected brand:
 
 | Brand | Card background | Logo |
 |---|---|---|
-| Visa | Navy blue → yellow gradient | Visa wordmark |
+| Visa | Navy blue → yellow gradient (70% navy) | Visa wordmark |
 | Mastercard | Orange → yellow gradient | Mastercard circles |
 | American Express | Solid blue | Amex logo |
 | Unknown | Neutral gray gradient | none |

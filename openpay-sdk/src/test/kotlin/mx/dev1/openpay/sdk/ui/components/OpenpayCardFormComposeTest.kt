@@ -69,14 +69,16 @@ class OpenpayCardFormComposeTest {
     }
 
     @Test
-    fun `typing a visa number shows the brand badge`() {
+    fun `typing a visa number shows the brand logo on the preview`() {
         renderForm()
 
         composeRule.onNodeWithTag(OpenpayFormTags.CARD_NUMBER_FIELD)
             .performTextInput("4111")
 
-        composeRule.onNodeWithTag(OpenpayFormTags.BRAND_BADGE, useUnmergedTree = true)
-            .assertExists()
+        composeRule.onNodeWithTag(
+            OpenpayFormTags.CARD_PREVIEW_BRAND_LOGO,
+            useUnmergedTree = true,
+        ).assertExists()
     }
 
     @Test
