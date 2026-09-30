@@ -54,6 +54,35 @@ page :
 - `OpenpaySecurityCodeField` — saisie masquée, longueur adaptée à la
   marque (4 pour Amex, 3 sinon)
 
+## Identité de marque sur l'aperçu de la carte
+
+L'aperçu de la carte réagit à la marque détectée :
+
+| Marque | Fond de la carte | Logo |
+|---|---|---|
+| Visa | Dégradé bleu marine → jaune | Logotype Visa |
+| Mastercard | Dégradé orange → jaune | Cercles Mastercard |
+| American Express | Bleu uni | Logo Amex |
+| Inconnue | Dégradé gris neutre | aucun |
+
+Le logo s'affiche dans le coin supérieur droit de l'aperçu et apparaît dès
+que le préfixe du numéro identifie la marque.
+
+Pour afficher le même logo à côté du résultat de la tokenisation (l'API
+renvoie la marque sous forme de chaîne, par exemple `"visa"`), utilisez le
+badge public :
+
+```kotlin
+import mx.dev1.openpay.sdk.domain.validation.CardBrand
+import mx.dev1.openpay.sdk.ui.components.OpenpayCardBrandLogo
+
+OpenpayCardBrandLogo(brand = CardBrand.fromBrandName(token.card?.brand))
+```
+
+Le badge dessine le logo blanc sur la couleur de sa marque, n'affiche rien
+pour les marques inconnues et annonce le nom de la marque (« Visa »,
+« Mastercard », « American Express ») aux lecteurs d'écran.
+
 ## Interopérabilité XML
 
 Les applications basées sur les vues obtiennent le même formulaire sans

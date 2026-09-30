@@ -33,6 +33,19 @@ private fun PartialCardPreviewPreview() {
     }
 }
 
+@Preview(name = "Card preview – Mastercard complete", showBackground = true)
+@Composable
+private fun MastercardCardPreviewPreview() {
+    OpenpayTheme {
+        OpenpayCardPreview(
+            holderName = "Ana García",
+            cardNumber = "5555555555554444",
+            expiration = "0929",
+            modifier = Modifier.padding(16.dp),
+        )
+    }
+}
+
 @Preview(name = "Card preview – Amex complete", showBackground = true)
 @Composable
 private fun AmexCardPreviewPreview() {

@@ -29,6 +29,8 @@ object OpenpayFormTags {
     const val EXPIRATION_FIELD = "openpay_expiration_field"
     const val SECURITY_CODE_FIELD = "openpay_security_code_field"
     const val BRAND_BADGE = "openpay_brand_badge"
+    const val CARD_BRAND_LOGO = "openpay_card_brand_logo"
+    const val CARD_PREVIEW_BRAND_LOGO = "openpay_card_preview_brand_logo"
     const val SUBMIT_BUTTON = "openpay_submit_button"
 }
 

@@ -1,5 +1,6 @@
 package mx.dev1.openpay.ui.addcard
 
+import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -80,6 +81,35 @@ class AddCardScreenComposeTest {
 
         composeRule.onNodeWithTag(AddCardScreenTags.TOKEN_RESULT).assertExists()
         composeRule.onNodeWithText("visa 411111XXXXXX1111").assertExists()
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_BRAND_LOGO, useUnmergedTree = true)
+            .assertContentDescriptionEquals("Visa")
+    }
+
+    @Test
+    fun `a token with an unrecognized brand shows no logo`() {
+        renderScreen(
+            uiState = CheckoutUiState(
+                createdToken = Token(
+                    tokenId = "tok-456",
+                    card = TokenizedCard(
+                        maskedCardNumber = "601100XXXXXX0004",
+                        holderName = "Juan Pérez",
+                        expirationMonth = "12",
+                        expirationYear = "30",
+                        brand = "carnet",
+                        cardType = "debit",
+                        bankName = null,
+                        bankCode = null,
+                        allowsCharges = true,
+                        allowsPayouts = false,
+                        address = null,
+                    ),
+                ),
+            ),
+        )
+
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_BRAND_LOGO, useUnmergedTree = true)
+            .assertDoesNotExist()
     }
 
     @Test

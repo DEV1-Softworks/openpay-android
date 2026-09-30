@@ -49,6 +49,28 @@ class CardBrandTest {
     }
 
     @Test
+    fun `api brand names map to their brand ignoring case`() {
+        assertEquals(CardBrand.VISA, CardBrand.fromBrandName("visa"))
+        assertEquals(CardBrand.VISA, CardBrand.fromBrandName("VISA"))
+        assertEquals(CardBrand.MASTERCARD, CardBrand.fromBrandName("mastercard"))
+        assertEquals(CardBrand.MASTERCARD, CardBrand.fromBrandName("master_card"))
+        assertEquals(CardBrand.AMERICAN_EXPRESS, CardBrand.fromBrandName("american_express"))
+        assertEquals(CardBrand.AMERICAN_EXPRESS, CardBrand.fromBrandName("amex"))
+    }
+
+    @Test
+    fun `surrounding spaces in the api brand name are ignored`() {
+        assertEquals(CardBrand.VISA, CardBrand.fromBrandName(" visa "))
+    }
+
+    @Test
+    fun `null, empty and unrecognized brand names are unknown`() {
+        assertEquals(CardBrand.UNKNOWN, CardBrand.fromBrandName(null))
+        assertEquals(CardBrand.UNKNOWN, CardBrand.fromBrandName(""))
+        assertEquals(CardBrand.UNKNOWN, CardBrand.fromBrandName("carnet"))
+    }
+
+    @Test
     fun `american express expects four digit security codes, the rest three`() {
         assertEquals(4, CardBrand.AMERICAN_EXPRESS.securityCodeLength)
         assertEquals(3, CardBrand.VISA.securityCodeLength)

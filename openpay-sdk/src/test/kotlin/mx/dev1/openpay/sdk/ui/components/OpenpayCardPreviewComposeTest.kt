@@ -63,10 +63,23 @@ class OpenpayCardPreviewComposeTest {
     }
 
     @Test
-    fun `visa number shows the brand label on the card`() {
+    fun `a recognized brand shows its logo on the card`() {
         renderPreview(cardNumber = "4111")
 
-        composeRule.onNodeWithText("VISA", useUnmergedTree = true).assertExists()
+        composeRule.onNodeWithTag(
+            OpenpayFormTags.CARD_PREVIEW_BRAND_LOGO,
+            useUnmergedTree = true,
+        ).assertExists()
+    }
+
+    @Test
+    fun `an unknown brand shows no logo on the card`() {
+        renderPreview(cardNumber = "6011")
+
+        composeRule.onNodeWithTag(
+            OpenpayFormTags.CARD_PREVIEW_BRAND_LOGO,
+            useUnmergedTree = true,
+        ).assertDoesNotExist()
     }
 
     @Test

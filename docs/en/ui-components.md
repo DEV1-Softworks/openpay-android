@@ -49,6 +49,34 @@ Each field is public and can be composed into your own layout:
 - `OpenpaySecurityCodeField` — masked input, brand-aware length (4 for
   Amex, 3 otherwise)
 
+## Brand identity on the card preview
+
+The live card preview reacts to the detected brand:
+
+| Brand | Card background | Logo |
+|---|---|---|
+| Visa | Navy blue → yellow gradient | Visa wordmark |
+| Mastercard | Orange → yellow gradient | Mastercard circles |
+| American Express | Solid blue | Amex logo |
+| Unknown | Neutral gray gradient | none |
+
+The logo sits at the top-right corner of the preview and appears as soon
+as the number prefix identifies the brand.
+
+To show the same logo next to a tokenization result (the API echoes the
+brand as a string such as `"visa"`), use the public badge:
+
+```kotlin
+import mx.dev1.openpay.sdk.domain.validation.CardBrand
+import mx.dev1.openpay.sdk.ui.components.OpenpayCardBrandLogo
+
+OpenpayCardBrandLogo(brand = CardBrand.fromBrandName(token.card?.brand))
+```
+
+The badge draws the white logo over its brand color, renders nothing for
+unknown brands, and announces the brand name ("Visa", "Mastercard",
+"American Express") to screen readers.
+
 ## XML interop
 
 View-based apps get the same form without any Compose code:

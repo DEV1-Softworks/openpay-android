@@ -1,13 +1,16 @@
 package mx.dev1.openpay.sdk.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -15,9 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -30,10 +33,10 @@ import mx.dev1.openpay.sdk.R
 import mx.dev1.openpay.sdk.domain.validation.CardBrand
 import mx.dev1.openpay.sdk.i18n.OpenpayLocalized
 
-private val CardPreviewGradientStart = Color(0xFF8E9199)
-private val CardPreviewGradientEnd = Color(0xFF4A4D55)
 private val CardPreviewTextColor = Color.White
 private val CardPreviewLabelColor = Color(0xFFD6D8DC)
+
+private val BrandLogoSlotHeight = 28.dp
 
 private const val MASK_CHARACTER = '•'
 private const val AMERICAN_EXPRESS_NUMBER_LENGTH = 15
@@ -93,15 +96,14 @@ fun OpenpayCardPreview(
 ) = OpenpayLocalized {
     val previewDescription = stringResource(R.string.openpay_card_preview_description)
     val brand = CardBrand.fromCardNumber(cardNumber)
+    val brandStyle = cardBrandVisualStyle(brand)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(ratio = 1.8f)
             .clip(RoundedCornerShape(20.dp))
-            .background(
-                Brush.linearGradient(listOf(CardPreviewGradientStart, CardPreviewGradientEnd)),
-            )
+            .background(brandStyle.backgroundBrush())
             .testTag(OpenpayFormTags.CARD_PREVIEW)
             .clearAndSetSemantics { contentDescription = previewDescription },
     ) {
@@ -111,13 +113,23 @@ fun OpenpayCardPreview(
                 .padding(20.dp),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
-                text = brandPreviewLabel(brand),
-                modifier = Modifier.align(Alignment.End),
-                color = CardPreviewTextColor,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-            )
+            // Fixed-height slot so the layout does not jump when the brand
+            // becomes known and the logo appears.
+            Box(
+                modifier = Modifier
+                    .height(BrandLogoSlotHeight)
+                    .align(Alignment.End),
+            ) {
+                brandStyle.logoDrawableResId?.let { logoDrawableResId ->
+                    Image(
+                        painter = painterResource(logoDrawableResId),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .testTag(OpenpayFormTags.CARD_PREVIEW_BRAND_LOGO),
+                    )
+                }
+            }
 
             Text(
                 text = formatPreviewCardNumber(cardNumber, brand),
@@ -168,11 +180,3 @@ fun OpenpayCardPreview(
         }
     }
 }
-
-private fun brandPreviewLabel(brand: CardBrand): String =
-    when (brand) {
-        CardBrand.VISA -> "VISA"
-        CardBrand.MASTERCARD -> "Mastercard"
-        CardBrand.AMERICAN_EXPRESS -> "AMEX"
-        CardBrand.UNKNOWN -> ""
-    }
