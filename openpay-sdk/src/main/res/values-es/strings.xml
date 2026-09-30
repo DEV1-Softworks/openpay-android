@@ -13,8 +13,6 @@
     <string name="openpay_error_security_code">Escribe el código de seguridad al reverso de la tarjeta</string>
 
     <!-- Accesibilidad -->
-    <string name="openpay_brand_description">Marca de tarjeta detectada: %1$s</string>
-    <string name="openpay_brand_unknown">desconocida</string>
     <string name="openpay_security_code_hidden_description">El código de seguridad se oculta mientras escribes</string>
     <string name="openpay_form_description">Formulario de tarjeta de pago</string>
 

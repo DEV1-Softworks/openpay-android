@@ -31,13 +31,15 @@ private val UnknownBrandGradientEnd = Color(0xFF4A4D55)
 
 /**
  * Visual identity of a card brand: the logo asset, how the logo must be
- * announced to screen readers, and the card background colors (one color
- * renders as a solid fill, two as a linear gradient).
+ * announced to screen readers, and the card background as color stops
+ * (fraction of the gradient paired with the color at that point). A single
+ * stop renders as a solid fill; repeating a color across stops widens its
+ * share of the gradient.
  */
 internal data class CardBrandVisualStyle(
     @param:DrawableRes val logoDrawableResId: Int?,
     val logoDescription: String?,
-    val backgroundColors: List<Color>,
+    val backgroundColorStops: List<Pair<Float, Color>>,
 )
 
 /**
@@ -49,35 +51,48 @@ internal fun cardBrandVisualStyle(brand: CardBrand): CardBrandVisualStyle =
         CardBrand.VISA -> CardBrandVisualStyle(
             logoDrawableResId = R.drawable.visa,
             logoDescription = "Visa",
-            backgroundColors = listOf(VisaNavyBlue, VisaYellow),
+            // Navy blue owns 70% of the card before blending into yellow.
+            backgroundColorStops = listOf(
+                0.0f to VisaNavyBlue,
+                0.7f to VisaNavyBlue,
+                1.0f to VisaYellow,
+            ),
         )
         CardBrand.MASTERCARD -> CardBrandVisualStyle(
             logoDrawableResId = R.drawable.mastercard,
             logoDescription = "Mastercard",
-            backgroundColors = listOf(MastercardOrange, MastercardYellow),
+            backgroundColorStops = listOf(
+                0.0f to MastercardOrange,
+                1.0f to MastercardYellow,
+            ),
         )
         CardBrand.AMERICAN_EXPRESS -> CardBrandVisualStyle(
             logoDrawableResId = R.drawable.amex,
             logoDescription = "American Express",
-            backgroundColors = listOf(AmericanExpressBlue),
+            backgroundColorStops = listOf(0.0f to AmericanExpressBlue),
         )
         CardBrand.UNKNOWN -> CardBrandVisualStyle(
             logoDrawableResId = null,
             logoDescription = null,
-            backgroundColors = listOf(UnknownBrandGradientStart, UnknownBrandGradientEnd),
+            backgroundColorStops = listOf(
+                0.0f to UnknownBrandGradientStart,
+                1.0f to UnknownBrandGradientEnd,
+            ),
         )
     }
 
 /**
- * Builds the card background for this style: a solid fill when it has one
- * color, a linear gradient when it has two or more.
+ * Builds the card background for this style: a solid fill when every stop
+ * shares one color, a linear gradient otherwise.
  */
-internal fun CardBrandVisualStyle.backgroundBrush(): Brush =
-    if (backgroundColors.size == 1) {
-        SolidColor(backgroundColors.single())
+internal fun CardBrandVisualStyle.backgroundBrush(): Brush {
+    val distinctColors = backgroundColorStops.map { stop -> stop.second }.distinct()
+    return if (distinctColors.size == 1) {
+        SolidColor(distinctColors.single())
     } else {
-        Brush.linearGradient(backgroundColors)
+        Brush.linearGradient(colorStops = backgroundColorStops.toTypedArray())
     }
+}
 
 /**
  * Badge with the brand logo over its brand color, meant for token or charge

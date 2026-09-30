@@ -69,7 +69,6 @@ fun OpenpayCardForm(
         OpenpayCardNumberField(
             value = state.cardNumber,
             onValueChange = state::updateCardNumber,
-            brand = state.detectedBrand,
             isError = state.isFieldInvalid(CardField.CARD_NUMBER),
         )
 

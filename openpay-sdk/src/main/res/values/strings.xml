@@ -13,8 +13,6 @@
     <string name="openpay_error_security_code">Enter the security code on the back of the card</string>
 
     <!-- Accessibility -->
-    <string name="openpay_brand_description">Detected card brand: %1$s</string>
-    <string name="openpay_brand_unknown">unknown</string>
     <string name="openpay_security_code_hidden_description">The security code is hidden while you type</string>
     <string name="openpay_form_description">Payment card form</string>
 

@@ -17,7 +17,23 @@ class CardBrandVisualsTest {
 
         assertEquals(R.drawable.visa, style.logoDrawableResId)
         assertEquals("Visa", style.logoDescription)
-        assertEquals(listOf(Color(0xFF1A1F71), Color(0xFFF7B600)), style.backgroundColors)
+        assertEquals(
+            listOf(
+                0.0f to Color(0xFF1A1F71),
+                0.7f to Color(0xFF1A1F71),
+                1.0f to Color(0xFFF7B600),
+            ),
+            style.backgroundColorStops,
+        )
+    }
+
+    @Test
+    fun `visa keeps navy blue over at least seventy percent of the card`() {
+        val stops = cardBrandVisualStyle(CardBrand.VISA).backgroundColorStops
+        val navyBlue = Color(0xFF1A1F71)
+        val lastNavyBlueStop = stops.last { stop -> stop.second == navyBlue }.first
+
+        assertTrue(lastNavyBlueStop >= 0.7f)
     }
 
     @Test
@@ -26,7 +42,13 @@ class CardBrandVisualsTest {
 
         assertEquals(R.drawable.mastercard, style.logoDrawableResId)
         assertEquals("Mastercard", style.logoDescription)
-        assertEquals(listOf(Color(0xFFFF5F00), Color(0xFFF79E1B)), style.backgroundColors)
+        assertEquals(
+            listOf(
+                0.0f to Color(0xFFFF5F00),
+                1.0f to Color(0xFFF79E1B),
+            ),
+            style.backgroundColorStops,
+        )
     }
 
     @Test
@@ -35,7 +57,7 @@ class CardBrandVisualsTest {
 
         assertEquals(R.drawable.amex, style.logoDrawableResId)
         assertEquals("American Express", style.logoDescription)
-        assertEquals(listOf(Color(0xFF006FCF)), style.backgroundColors)
+        assertEquals(listOf(0.0f to Color(0xFF006FCF)), style.backgroundColorStops)
     }
 
     @Test
@@ -44,7 +66,13 @@ class CardBrandVisualsTest {
 
         assertNull(style.logoDrawableResId)
         assertNull(style.logoDescription)
-        assertEquals(listOf(Color(0xFF8E9199), Color(0xFF4A4D55)), style.backgroundColors)
+        assertEquals(
+            listOf(
+                0.0f to Color(0xFF8E9199),
+                1.0f to Color(0xFF4A4D55),
+            ),
+            style.backgroundColorStops,
+        )
     }
 
     @Test
@@ -55,7 +83,7 @@ class CardBrandVisualsTest {
     }
 
     @Test
-    fun `two background colors render as a gradient brush`() {
+    fun `several background colors render as a gradient brush`() {
         val brush = cardBrandVisualStyle(CardBrand.VISA).backgroundBrush()
 
         assertTrue(brush !is SolidColor)

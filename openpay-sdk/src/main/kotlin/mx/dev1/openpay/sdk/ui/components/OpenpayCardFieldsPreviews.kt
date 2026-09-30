@@ -2,7 +2,6 @@ package mx.dev1.openpay.sdk.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import mx.dev1.openpay.sdk.domain.validation.CardBrand
 import mx.dev1.openpay.sdk.ui.theme.OpenpayTheme
 
 @Preview(name = "Holder name field", showBackground = true)
@@ -29,14 +28,13 @@ private fun HolderNameFieldErrorPreview() {
     }
 }
 
-@Preview(name = "Card number field with detected brand", showBackground = true)
+@Preview(name = "Card number field", showBackground = true)
 @Composable
 private fun CardNumberFieldPreview() {
     OpenpayTheme {
         OpenpayCardNumberField(
             value = "4111111111111111",
             onValueChange = {},
-            brand = CardBrand.VISA,
             isError = false,
         )
     }
@@ -49,7 +47,6 @@ private fun CardNumberFieldErrorPreview() {
         OpenpayCardNumberField(
             value = "1234",
             onValueChange = {},
-            brand = CardBrand.UNKNOWN,
             isError = true,
         )
     }

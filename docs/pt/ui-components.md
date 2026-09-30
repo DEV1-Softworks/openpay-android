@@ -23,6 +23,28 @@ além de um botão de envio. `onCardValidated` é disparado **apenas** quando
 todos os campos passam na validação; campos inválidos são destacados com
 mensagens de erro traduzidas.
 
+### Implementação com o formulário nativo
+
+O callback entrega um `Card` validado; tokenize-o e envie o id do token
+para o seu backend:
+
+```kotlin
+val scope = rememberCoroutineScope()
+
+OpenpayCardForm(
+    onCardValidated = { card ->
+        scope.launch {
+            openpay.createToken(card)
+                .onSuccess { token -> /* envie token.tokenId ao seu backend */ }
+                .onFailure { error -> /* mostre o erro */ }
+        }
+    },
+)
+```
+
+Veja [Primeiros passos](getting-started.md) para construir a instância
+`openpay` com o seu id de comerciante e chave pública.
+
 ### Controlando o estado você mesmo
 
 ```kotlin
@@ -40,16 +62,60 @@ OpenpayCardForm(
 Por segurança, o estado do formulário **não** é persistido quando o processo
 é encerrado — os dados do cartão nunca tocam o disco.
 
-## Campos individuais
+## Implementação com inputs personalizados
 
-Cada campo é público e pode ser composto no seu próprio layout:
+Cada campo é público e pode ser composto no seu próprio layout mantendo a
+formatação e a validação do SDK:
 
 - `OpenpayHolderNameField`
-- `OpenpayCardNumberField` — formatação em grupos (4-4-4-4, Amex 4-6-5) e um
-  selo da bandeira
+- `OpenpayCardNumberField` — formatação em grupos (4-4-4-4, Amex 4-6-5)
 - `OpenpayExpirationField` — formatação visual MM/AA sobre os dígitos MMAA
 - `OpenpaySecurityCodeField` — entrada mascarada, comprimento conforme a
   bandeira (4 para Amex, 3 nos demais casos)
+
+Conecte-os ao `rememberOpenpayCardFormState()`, que guarda apenas dígitos,
+detecta a bandeira e valida todos os campos:
+
+```kotlin
+val formState = rememberOpenpayCardFormState()
+
+Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    OpenpayCardPreview(              // opcional: inclui cores e logo da bandeira
+        holderName = formState.holderName,
+        cardNumber = formState.cardNumber,
+        expiration = formState.expiration,
+    )
+    OpenpayHolderNameField(
+        value = formState.holderName,
+        onValueChange = formState::updateHolderName,
+        isError = formState.isFieldInvalid(CardField.HOLDER_NAME),
+    )
+    OpenpayCardNumberField(
+        value = formState.cardNumber,
+        onValueChange = formState::updateCardNumber,
+        isError = formState.isFieldInvalid(CardField.CARD_NUMBER),
+    )
+    OpenpayExpirationField(
+        value = formState.expiration,
+        onValueChange = formState::updateExpiration,
+        isError = formState.isFieldInvalid(CardField.EXPIRATION),
+    )
+    OpenpaySecurityCodeField(
+        value = formState.securityCode,
+        onValueChange = formState::updateSecurityCode,
+        isError = formState.isFieldInvalid(CardField.SECURITY_CODE),
+    )
+    Button(onClick = {
+        formState.validate()?.let { card -> /* createToken(card) como acima */ }
+    }) {
+        Text("Pagar")
+    }
+}
+```
+
+`formState.validate()` retorna o `Card` pronto para tokenização quando
+todos os campos são válidos; caso contrário retorna null e marca os campos
+com falha para que `isFieldInvalid` os destaque.
 
 ## Identidade de marca na pré-visualização
 
@@ -57,7 +123,7 @@ A pré-visualização do cartão reage à bandeira detectada:
 
 | Bandeira | Fundo do cartão | Logo |
 |---|---|---|
-| Visa | Gradiente azul-marinho → amarelo | Logotipo da Visa |
+| Visa | Gradiente azul-marinho → amarelo (70% azul) | Logotipo da Visa |
 | Mastercard | Gradiente laranja → amarelo | Círculos da Mastercard |
 | American Express | Azul sólido | Logo da Amex |
 | Desconhecida | Gradiente cinza neutro | nenhum |
