@@ -20,7 +20,9 @@ val coverageExclusions = listOf(
     "**/*Test*.*",
     "android/**/*.*",
     "**/*ComposableSingletons*.*",
-    "**/*Preview*Kt*.*",
+    // @Preview functions live in *Previews.kt files; the pattern must not
+    // catch real components such as OpenpayCardPreview.
+    "**/*PreviewsKt*.*",
 )
 
 subprojects {

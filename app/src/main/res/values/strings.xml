@@ -9,4 +9,7 @@
     <string name="sample_start_device_session">Start antifraud device session</string>
     <string name="sample_device_session_result">Device session: %1$s</string>
     <string name="sample_token_created">Token created: %1$s</string>
+    <string name="sample_add_card_button">Add card</string>
+    <string name="sample_add_card_title">Add card</string>
+    <string name="sample_back">Back</string>
 </resources>
