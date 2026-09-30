@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -33,23 +33,57 @@ import androidx.compose.ui.unit.dp
 import mx.dev1.openpay.R
 import mx.dev1.openpay.sdk.core.OpenpayCountry
 import mx.dev1.openpay.sdk.i18n.OpenpayLanguage
-import mx.dev1.openpay.sdk.ui.components.OpenpayCardForm
 import org.koin.androidx.compose.koinViewModel
 
 object CheckoutScreenTags {
     const val MERCHANT_ID_FIELD = "sample_merchant_id_field"
     const val PUBLIC_KEY_FIELD = "sample_public_key_field"
     const val DEVICE_SESSION_BUTTON = "sample_device_session_button"
-    const val TOKEN_RESULT = "sample_token_result"
+    const val ADD_CARD_BUTTON = "sample_add_card_button"
     const val ERROR_MESSAGE = "sample_error_message"
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Configuration screen of the sample: merchant credentials, SDK language and
+ * antifraud device session. The card form lives in its own screen, reached
+ * through [onAddCardClick] once the configuration is complete.
+ */
 @Composable
-fun CheckoutScreen(viewModel: CheckoutViewModel = koinViewModel()) {
+fun CheckoutScreen(
+    onAddCardClick: () -> Unit,
+    viewModel: CheckoutViewModel = koinViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsState()
     val hostActivity = LocalContext.current as? Activity
 
+    CheckoutScreenContent(
+        uiState = uiState,
+        onMerchantIdChange = viewModel::updateMerchantId,
+        onPublicApiKeyChange = viewModel::updatePublicApiKey,
+        onCountryChange = viewModel::updateCountry,
+        onProductionModeChange = viewModel::updateProductionMode,
+        onLanguageChange = viewModel::updateLanguage,
+        onStartDeviceSession = { hostActivity?.let(viewModel::startDeviceSession) },
+        onAddCardClick = onAddCardClick,
+    )
+}
+
+/**
+ * Stateless layout of the configuration screen, extracted so previews and
+ * tests can render it with a fabricated [CheckoutUiState].
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CheckoutScreenContent(
+    uiState: CheckoutUiState,
+    onMerchantIdChange: (String) -> Unit,
+    onPublicApiKeyChange: (String) -> Unit,
+    onCountryChange: (OpenpayCountry) -> Unit,
+    onProductionModeChange: (Boolean) -> Unit,
+    onLanguageChange: (OpenpayLanguage?) -> Unit,
+    onStartDeviceSession: () -> Unit,
+    onAddCardClick: () -> Unit,
+) {
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) },
     ) { innerPadding ->
@@ -64,11 +98,20 @@ fun CheckoutScreen(viewModel: CheckoutViewModel = koinViewModel()) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            MerchantConfigurationSection(uiState, viewModel)
-            LanguageSection(uiState, viewModel)
+            MerchantConfigurationSection(
+                uiState = uiState,
+                onMerchantIdChange = onMerchantIdChange,
+                onPublicApiKeyChange = onPublicApiKeyChange,
+                onCountryChange = onCountryChange,
+                onProductionModeChange = onProductionModeChange,
+            )
+            LanguageSection(
+                selectedLanguage = uiState.selectedLanguage,
+                onLanguageChange = onLanguageChange,
+            )
 
             OutlinedButton(
-                onClick = { hostActivity?.let(viewModel::startDeviceSession) },
+                onClick = onStartDeviceSession,
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(CheckoutScreenTags.DEVICE_SESSION_BUTTON),
@@ -82,26 +125,15 @@ fun CheckoutScreen(viewModel: CheckoutViewModel = koinViewModel()) {
                 )
             }
 
-            OpenpayCardForm(onCardValidated = viewModel::tokenize)
-
-            if (uiState.isProcessing) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-            }
-
-            uiState.createdToken?.let { token ->
-                Card(modifier = Modifier
+            Button(
+                onClick = onAddCardClick,
+                enabled = uiState.isConfigurationComplete,
+                modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(CheckoutScreenTags.TOKEN_RESULT)) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(stringResource(R.string.sample_token_created, token.tokenId))
-                        token.card?.let { tokenizedCard ->
-                            Text(
-                                text = "${tokenizedCard.brand ?: ""} ${tokenizedCard.maskedCardNumber ?: ""}".trim(),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                    }
-                }
+                    .heightIn(min = 48.dp)
+                    .testTag(CheckoutScreenTags.ADD_CARD_BUTTON),
+            ) {
+                Text(stringResource(R.string.sample_add_card_button))
             }
 
             uiState.errorMessage?.let { errorMessage ->
@@ -118,7 +150,10 @@ fun CheckoutScreen(viewModel: CheckoutViewModel = koinViewModel()) {
 @Composable
 private fun MerchantConfigurationSection(
     uiState: CheckoutUiState,
-    viewModel: CheckoutViewModel,
+    onMerchantIdChange: (String) -> Unit,
+    onPublicApiKeyChange: (String) -> Unit,
+    onCountryChange: (OpenpayCountry) -> Unit,
+    onProductionModeChange: (Boolean) -> Unit,
 ) {
     Text(
         text = stringResource(R.string.sample_configuration_title),
@@ -126,7 +161,7 @@ private fun MerchantConfigurationSection(
     )
     OutlinedTextField(
         value = uiState.merchantId,
-        onValueChange = viewModel::updateMerchantId,
+        onValueChange = onMerchantIdChange,
         modifier = Modifier
             .fillMaxWidth()
             .testTag(CheckoutScreenTags.MERCHANT_ID_FIELD),
@@ -135,7 +170,7 @@ private fun MerchantConfigurationSection(
     )
     OutlinedTextField(
         value = uiState.publicApiKey,
-        onValueChange = viewModel::updatePublicApiKey,
+        onValueChange = onPublicApiKeyChange,
         modifier = Modifier
             .fillMaxWidth()
             .testTag(CheckoutScreenTags.PUBLIC_KEY_FIELD),
@@ -149,7 +184,7 @@ private fun MerchantConfigurationSection(
         OpenpayCountry.entries.forEach { country ->
             FilterChip(
                 selected = uiState.country == country,
-                onClick = { viewModel.updateCountry(country) },
+                onClick = { onCountryChange(country) },
                 label = { Text(country.name) },
             )
         }
@@ -160,7 +195,7 @@ private fun MerchantConfigurationSection(
     ) {
         Switch(
             checked = uiState.isProductionMode,
-            onCheckedChange = viewModel::updateProductionMode,
+            onCheckedChange = onProductionModeChange,
         )
         Text(stringResource(R.string.sample_production_mode))
     }
@@ -168,8 +203,8 @@ private fun MerchantConfigurationSection(
 
 @Composable
 private fun LanguageSection(
-    uiState: CheckoutUiState,
-    viewModel: CheckoutViewModel,
+    selectedLanguage: OpenpayLanguage?,
+    onLanguageChange: (OpenpayLanguage?) -> Unit,
 ) {
     Text(
         text = stringResource(R.string.sample_language_title),
@@ -177,14 +212,14 @@ private fun LanguageSection(
     )
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         FilterChip(
-            selected = uiState.selectedLanguage == null,
-            onClick = { viewModel.updateLanguage(null) },
+            selected = selectedLanguage == null,
+            onClick = { onLanguageChange(null) },
             label = { Text(stringResource(R.string.sample_language_automatic)) },
         )
         OpenpayLanguage.entries.forEach { language ->
             FilterChip(
-                selected = uiState.selectedLanguage == language,
-                onClick = { viewModel.updateLanguage(language) },
+                selected = selectedLanguage == language,
+                onClick = { onLanguageChange(language) },
                 label = { Text(language.languageTag.uppercase()) },
             )
         }
