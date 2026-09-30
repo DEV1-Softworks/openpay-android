@@ -23,6 +23,7 @@ import mx.dev1.openpay.sdk.ui.input.CardNumberVisualTransformation
 import mx.dev1.openpay.sdk.ui.input.ExpirationVisualTransformation
 
 object OpenpayFormTags {
+    const val CARD_PREVIEW = "openpay_card_preview"
     const val HOLDER_NAME_FIELD = "openpay_holder_name_field"
     const val CARD_NUMBER_FIELD = "openpay_card_number_field"
     const val EXPIRATION_FIELD = "openpay_expiration_field"

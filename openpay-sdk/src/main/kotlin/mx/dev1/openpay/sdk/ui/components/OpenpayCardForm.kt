@@ -33,6 +33,8 @@ import mx.dev1.openpay.sdk.ui.state.rememberOpenpayCardFormState
  * and every field passes validation.
  * @param submitButtonText optional replacement for the submit button label;
  * when null the localized SDK text is used.
+ * @param showCardPreview whether to render the live card preview above the
+ * fields; disable it when the host app provides its own card artwork.
  */
 @Composable
 fun OpenpayCardForm(
@@ -40,6 +42,7 @@ fun OpenpayCardForm(
     modifier: Modifier = Modifier,
     state: OpenpayCardFormState = rememberOpenpayCardFormState(),
     submitButtonText: String? = null,
+    showCardPreview: Boolean = true,
 ) = OpenpayLocalized {
     val formDescription = stringResource(R.string.openpay_form_description)
 
@@ -49,6 +52,14 @@ fun OpenpayCardForm(
             .semantics { contentDescription = formDescription },
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        if (showCardPreview) {
+            OpenpayCardPreview(
+                holderName = state.holderName,
+                cardNumber = state.cardNumber,
+                expiration = state.expiration,
+            )
+        }
+
         OpenpayHolderNameField(
             value = state.holderName,
             onValueChange = state::updateHolderName,

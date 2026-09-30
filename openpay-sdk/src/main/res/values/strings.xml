@@ -18,6 +18,12 @@
     <string name="openpay_security_code_hidden_description">The security code is hidden while you type</string>
     <string name="openpay_form_description">Payment card form</string>
 
+    <!-- Card preview -->
+    <string name="openpay_card_preview_description">Preview of the card you are entering</string>
+    <string name="openpay_card_preview_holder_label">Cardholder</string>
+    <string name="openpay_card_preview_holder_placeholder">CARDHOLDER</string>
+    <string name="openpay_card_preview_expiration_label">Expires</string>
+
     <!-- Actions -->
     <string name="openpay_pay_button">Save card</string>
 </resources>

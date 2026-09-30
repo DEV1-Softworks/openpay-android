@@ -18,6 +18,12 @@
     <string name="openpay_security_code_hidden_description">El código de seguridad se oculta mientras escribes</string>
     <string name="openpay_form_description">Formulario de tarjeta de pago</string>
 
+    <!-- Vista previa de la tarjeta -->
+    <string name="openpay_card_preview_description">Vista previa de la tarjeta que estás capturando</string>
+    <string name="openpay_card_preview_holder_label">Titular</string>
+    <string name="openpay_card_preview_holder_placeholder">TITULAR</string>
+    <string name="openpay_card_preview_expiration_label">Vence</string>
+
     <!-- Acciones -->
     <string name="openpay_pay_button">Guardar tarjeta</string>
 </resources>

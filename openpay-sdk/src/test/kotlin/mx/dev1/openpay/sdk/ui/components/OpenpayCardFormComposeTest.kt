@@ -90,6 +90,33 @@ class OpenpayCardFormComposeTest {
     }
 
     @Test
+    fun `card preview is shown by default and mirrors the typed number`() {
+        renderForm()
+
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_PREVIEW).assertIsDisplayed()
+
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_NUMBER_FIELD)
+            .performTextInput("41111111")
+
+        composeRule.onNodeWithText("4111 1111 •••• ••••", useUnmergedTree = true)
+            .assertExists()
+    }
+
+    @Test
+    fun `card preview can be disabled by the host app`() {
+        composeRule.setContent {
+            OpenpayTheme {
+                OpenpayCardForm(
+                    onCardValidated = { card -> validatedCard = card },
+                    showCardPreview = false,
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_PREVIEW).assertDoesNotExist()
+    }
+
+    @Test
     fun `fixing a field after a failed submit clears its error`() {
         renderForm()
         composeRule.onNodeWithTag(OpenpayFormTags.SUBMIT_BUTTON).performClick()
