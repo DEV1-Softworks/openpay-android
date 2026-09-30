@@ -2,6 +2,7 @@ package mx.dev1.openpay.ui.addcard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -29,6 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import mx.dev1.openpay.R
 import mx.dev1.openpay.sdk.domain.model.Card as OpenpayCard
+import mx.dev1.openpay.sdk.domain.validation.CardBrand
+import mx.dev1.openpay.sdk.ui.components.OpenpayCardBrandLogo
 import mx.dev1.openpay.sdk.ui.components.OpenpayCardForm
 import mx.dev1.openpay.ui.checkout.CheckoutUiState
 import mx.dev1.openpay.ui.checkout.CheckoutViewModel
@@ -114,10 +117,18 @@ fun AddCardScreenContent(
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(stringResource(R.string.sample_token_created, token.tokenId))
                         token.card?.let { tokenizedCard ->
-                            Text(
-                                text = "${tokenizedCard.brand ?: ""} ${tokenizedCard.maskedCardNumber ?: ""}".trim(),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                OpenpayCardBrandLogo(
+                                    brand = CardBrand.fromBrandName(tokenizedCard.brand),
+                                )
+                                Text(
+                                    text = "${tokenizedCard.brand ?: ""} ${tokenizedCard.maskedCardNumber ?: ""}".trim(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
                         }
                     }
                 }

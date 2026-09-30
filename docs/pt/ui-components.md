@@ -51,6 +51,34 @@ Cada campo é público e pode ser composto no seu próprio layout:
 - `OpenpaySecurityCodeField` — entrada mascarada, comprimento conforme a
   bandeira (4 para Amex, 3 nos demais casos)
 
+## Identidade de marca na pré-visualização
+
+A pré-visualização do cartão reage à bandeira detectada:
+
+| Bandeira | Fundo do cartão | Logo |
+|---|---|---|
+| Visa | Gradiente azul-marinho → amarelo | Logotipo da Visa |
+| Mastercard | Gradiente laranja → amarelo | Círculos da Mastercard |
+| American Express | Azul sólido | Logo da Amex |
+| Desconhecida | Gradiente cinza neutro | nenhum |
+
+O logo fica no canto superior direito da pré-visualização e aparece assim
+que o prefixo do número identifica a bandeira.
+
+Para mostrar o mesmo logo ao lado do resultado da tokenização (a API
+devolve a bandeira como string, por exemplo `"visa"`), use o badge público:
+
+```kotlin
+import mx.dev1.openpay.sdk.domain.validation.CardBrand
+import mx.dev1.openpay.sdk.ui.components.OpenpayCardBrandLogo
+
+OpenpayCardBrandLogo(brand = CardBrand.fromBrandName(token.card?.brand))
+```
+
+O badge desenha o logo branco sobre a cor da sua bandeira, não mostra nada
+para bandeiras desconhecidas e anuncia o nome da bandeira ("Visa",
+"Mastercard", "American Express") aos leitores de tela.
+
 ## Interoperabilidade com XML
 
 Apps baseados em views obtêm o mesmo formulário sem nenhum código Compose:
