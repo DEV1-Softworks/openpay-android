@@ -1,0 +1,27 @@
+<resources>
+    <!-- Libellés des champs -->
+    <string name="openpay_holder_name_label">Nom du titulaire</string>
+    <string name="openpay_card_number_label">Numéro de carte</string>
+    <string name="openpay_expiration_label">Date d\'expiration</string>
+    <string name="openpay_expiration_placeholder">MM/AA</string>
+    <string name="openpay_security_code_label">Code de sécurité</string>
+
+    <!-- Erreurs de validation -->
+    <string name="openpay_error_holder_name">Saisissez le nom tel qu\'il figure sur la carte</string>
+    <string name="openpay_error_card_number">Saisissez un numéro de carte valide</string>
+    <string name="openpay_error_expiration">Saisissez une date d\'expiration valide</string>
+    <string name="openpay_error_security_code">Saisissez le code de sécurité au dos de la carte</string>
+
+    <!-- Accessibilité -->
+    <string name="openpay_security_code_hidden_description">Le code de sécurité est masqué pendant la saisie</string>
+    <string name="openpay_form_description">Formulaire de carte de paiement</string>
+
+    <!-- Aperçu de la carte -->
+    <string name="openpay_card_preview_description">Aperçu de la carte que vous saisissez</string>
+    <string name="openpay_card_preview_holder_label">Titulaire</string>
+    <string name="openpay_card_preview_holder_placeholder">TITULAIRE</string>
+    <string name="openpay_card_preview_expiration_label">Expire</string>
+
+    <!-- Actions -->
+    <string name="openpay_pay_button">Enregistrer la carte</string>
+</resources>

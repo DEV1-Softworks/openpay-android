@@ -1,0 +1,27 @@
+<resources>
+    <!-- Field labels -->
+    <string name="openpay_holder_name_label">Cardholder name</string>
+    <string name="openpay_card_number_label">Card number</string>
+    <string name="openpay_expiration_label">Expiration date</string>
+    <string name="openpay_expiration_placeholder">MM/YY</string>
+    <string name="openpay_security_code_label">Security code</string>
+
+    <!-- Validation errors -->
+    <string name="openpay_error_holder_name">Enter the name as printed on the card</string>
+    <string name="openpay_error_card_number">Enter a valid card number</string>
+    <string name="openpay_error_expiration">Enter a valid expiration date</string>
+    <string name="openpay_error_security_code">Enter the security code on the back of the card</string>
+
+    <!-- Accessibility -->
+    <string name="openpay_security_code_hidden_description">The security code is hidden while you type</string>
+    <string name="openpay_form_description">Payment card form</string>
+
+    <!-- Card preview -->
+    <string name="openpay_card_preview_description">Preview of the card you are entering</string>
+    <string name="openpay_card_preview_holder_label">Cardholder</string>
+    <string name="openpay_card_preview_holder_placeholder">CARDHOLDER</string>
+    <string name="openpay_card_preview_expiration_label">Expires</string>
+
+    <!-- Actions -->
+    <string name="openpay_pay_button">Save card</string>
+</resources>

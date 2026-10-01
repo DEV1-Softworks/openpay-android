@@ -1,0 +1,27 @@
+<resources>
+    <!-- Rótulos dos campos -->
+    <string name="openpay_holder_name_label">Nome do titular</string>
+    <string name="openpay_card_number_label">Número do cartão</string>
+    <string name="openpay_expiration_label">Data de validade</string>
+    <string name="openpay_expiration_placeholder">MM/AA</string>
+    <string name="openpay_security_code_label">Código de segurança</string>
+
+    <!-- Erros de validação -->
+    <string name="openpay_error_holder_name">Digite o nome como está impresso no cartão</string>
+    <string name="openpay_error_card_number">Digite um número de cartão válido</string>
+    <string name="openpay_error_expiration">Digite uma data de validade válida</string>
+    <string name="openpay_error_security_code">Digite o código de segurança no verso do cartão</string>
+
+    <!-- Acessibilidade -->
+    <string name="openpay_security_code_hidden_description">O código de segurança fica oculto enquanto você digita</string>
+    <string name="openpay_form_description">Formulário do cartão de pagamento</string>
+
+    <!-- Pré-visualização do cartão -->
+    <string name="openpay_card_preview_description">Pré-visualização do cartão que você está digitando</string>
+    <string name="openpay_card_preview_holder_label">Titular</string>
+    <string name="openpay_card_preview_holder_placeholder">TITULAR</string>
+    <string name="openpay_card_preview_expiration_label">Validade</string>
+
+    <!-- Ações -->
+    <string name="openpay_pay_button">Salvar cartão</string>
+</resources>
