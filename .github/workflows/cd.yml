@@ -1,0 +1,97 @@
+name: CD
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Tests and coverage gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Run unit tests and the coverage gate
+        run: ./gradlew testDebugUnitTest :openpay-sdk:jacocoCoverageVerification
+
+  publish:
+    name: Publish to Maven Central
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Verify the tag matches the library version
+        if: github.ref_type == 'tag'
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          gradle_version="$(grep '^VERSION_NAME=' gradle.properties | cut -d= -f2)"
+          if [ "$tag_version" != "$gradle_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match VERSION_NAME=$gradle_version in gradle.properties"
+            exit 1
+          fi
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Publish the signed artifacts to the Central Portal staging API
+        env:
+          MAVEN_REPOSITORY_URL: https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/
+          MAVEN_REPOSITORY_USERNAME: ${{ secrets.MAVEN_REPOSITORY_USERNAME }}
+          MAVEN_REPOSITORY_PASSWORD: ${{ secrets.MAVEN_REPOSITORY_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew :openpay-sdk:publishReleasePublicationToRemoteRepository
+
+      - name: Remind about the manual portal release step
+        run: |
+          {
+            echo "## Deployment staged"
+            echo ""
+            echo "The signed artifacts were uploaded to the Central Portal."
+            echo "Go to https://central.sonatype.com → Publish → Deployments,"
+            echo "wait for validation to pass and press **Publish** to release"
+            echo "to Maven Central. Nothing is public until that button is pressed."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  github-release:
+    name: Create the GitHub release
+    runs-on: ubuntu-latest
+    needs: publish
+    if: github.ref_type == 'tag'
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Create the release with generated notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes
