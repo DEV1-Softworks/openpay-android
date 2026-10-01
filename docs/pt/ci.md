@@ -43,3 +43,35 @@ Cada pull request recebe um único comentário intitulado **Unit test coverage**
 ```
 
 O relatório HTML é gerado em `<módulo>/build/reports/jacoco/jacocoTestReport/html/index.html`.
+
+## Deploy contínuo
+
+Um segundo workflow (`.github/workflows/cd.yml`) libera a biblioteca no
+Maven Central. Ele roda quando um tag de versão (`v1.2.3`) é enviado —
+normalmente o tag do commit de merge de um release em `master` — e também
+pode ser iniciado manualmente na aba Actions.
+
+```mermaid
+flowchart LR
+    A[Push do tag v*] --> B[Testes unitários + limite de cobertura]
+    B --> C[Verificar tag == VERSION_NAME]
+    C --> D[Assinar e enviar ao Central Portal]
+    D --> E[Publish manual em central.sonatype.com]
+    D --> F[Release do GitHub com notas geradas]
+```
+
+1. **Testes primeiro** — o release é bloqueado se os testes unitários ou o
+   limite de cobertura de 80% falharem.
+2. **Guarda de versão** — o workflow falha se o tag não corresponder ao
+   `VERSION_NAME` em `gradle.properties`; um release com tag errado não
+   consegue sair.
+3. **Envio assinado** — os artefatos são assinados com PGP e enviados à
+   área de staging do Central Portal da Sonatype. As credenciais e a chave
+   de assinatura vêm dos secrets do repositório
+   (`MAVEN_REPOSITORY_USERNAME`, `MAVEN_REPOSITORY_PASSWORD`,
+   `SIGNING_KEY`, `SIGNING_PASSWORD`); elas nunca vivem no repositório.
+4. **Confirmação manual** — nada se torna público automaticamente: uma
+   pessoa mantenedora precisa pressionar **Publish** no deployment
+   validado em [central.sonatype.com](https://central.sonatype.com). O
+   resumo da execução aponta para essa etapa.
+5. Um release do GitHub com notas geradas é criado para o tag.

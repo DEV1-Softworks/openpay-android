@@ -43,3 +43,35 @@ Every pull request receives a single comment titled **Unit test coverage** that 
 ```
 
 The HTML report is generated at `<module>/build/reports/jacoco/jacocoTestReport/html/index.html`.
+
+## Continuous deployment
+
+A second workflow (`.github/workflows/cd.yml`) releases the library to
+Maven Central. It runs when a version tag (`v1.2.3`) is pushed — normally
+the tag on the `master` merge commit of a release — and can also be
+started manually from the Actions tab.
+
+```mermaid
+flowchart LR
+    A[Push tag v*] --> B[Unit tests + coverage gate]
+    B --> C[Check tag == VERSION_NAME]
+    C --> D[Sign and upload to the Central Portal]
+    D --> E[Manual Publish in central.sonatype.com]
+    D --> F[GitHub release with generated notes]
+```
+
+1. **Tests first** — the release is blocked unless the unit tests and the
+   80% coverage gate pass.
+2. **Version guard** — the workflow fails if the tag does not match
+   `VERSION_NAME` in `gradle.properties`, so a mistagged release cannot
+   ship.
+3. **Signed upload** — artifacts are PGP-signed and uploaded to the
+   Sonatype Central Portal staging area. Credentials and the signing key
+   come from the repository secrets (`MAVEN_REPOSITORY_USERNAME`,
+   `MAVEN_REPOSITORY_PASSWORD`, `SIGNING_KEY`, `SIGNING_PASSWORD`); they
+   never live in the repository.
+4. **Manual confirmation** — nothing becomes public automatically: a
+   maintainer must press **Publish** on the validated deployment at
+   [central.sonatype.com](https://central.sonatype.com). The run summary
+   links the step.
+5. A GitHub release with generated notes is created for the tag.
