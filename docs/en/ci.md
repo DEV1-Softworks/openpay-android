@@ -55,9 +55,10 @@ started manually from the Actions tab.
 flowchart LR
     A[Push tag v*] --> B[Unit tests + coverage gate]
     B --> C[Check tag == VERSION_NAME]
-    C --> D[Sign and upload to the Central Portal]
-    D --> E[Manual Publish in central.sonatype.com]
-    D --> F[GitHub release with generated notes]
+    C --> D[Sign and upload to the staging API]
+    D --> E[Promote the staging repository to the Portal]
+    E --> F[Manual Publish in central.sonatype.com]
+    E --> G[GitHub release with generated notes]
 ```
 
 1. **Tests first** — the release is blocked unless the unit tests and the
@@ -66,12 +67,16 @@ flowchart LR
    `VERSION_NAME` in `gradle.properties`, so a mistagged release cannot
    ship.
 3. **Signed upload** — artifacts are PGP-signed and uploaded to the
-   Sonatype Central Portal staging area. Credentials and the signing key
+   Sonatype OSSRH staging API. Credentials and the signing key
    come from the repository secrets (`MAVEN_REPOSITORY_USERNAME`,
    `MAVEN_REPOSITORY_PASSWORD`, `SIGNING_KEY`, `SIGNING_PASSWORD`); they
    never live in the repository.
-4. **Manual confirmation** — nothing becomes public automatically: a
+4. **Portal promotion** — the staging API keeps the upload in an open
+   repository that the Portal does not show. The workflow calls the
+   manual API to promote it, which makes the deployment appear under
+   **Publish → Deployments** in the Portal.
+5. **Manual confirmation** — nothing becomes public automatically: a
    maintainer must press **Publish** on the validated deployment at
    [central.sonatype.com](https://central.sonatype.com). The run summary
    links the step.
-5. A GitHub release with generated notes is created for the tag.
+6. A GitHub release with generated notes is created for the tag.
