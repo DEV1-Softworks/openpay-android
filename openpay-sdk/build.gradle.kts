@@ -84,8 +84,8 @@ publishing {
                 developers {
                     developer {
                         id.set("dev1-softworks")
-                        name.set("DEV1 Softworks")
-                        url.set("https://github.com/DEV1-Softworks")
+                        name.set("DEV1 Softworks Labs")
+                        url.set("https://labs.dev1.mx")
                     }
                 }
                 scm {
