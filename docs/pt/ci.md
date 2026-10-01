@@ -55,9 +55,10 @@ pode ser iniciado manualmente na aba Actions.
 flowchart LR
     A[Push do tag v*] --> B[Testes unitários + limite de cobertura]
     B --> C[Verificar tag == VERSION_NAME]
-    C --> D[Assinar e enviar ao Central Portal]
-    D --> E[Publish manual em central.sonatype.com]
-    D --> F[Release do GitHub com notas geradas]
+    C --> D[Assinar e enviar à API de staging]
+    D --> E[Promover o repositório de staging ao Portal]
+    E --> F[Publish manual em central.sonatype.com]
+    E --> G[Release do GitHub com notas geradas]
 ```
 
 1. **Testes primeiro** — o release é bloqueado se os testes unitários ou o
@@ -66,12 +67,16 @@ flowchart LR
    `VERSION_NAME` em `gradle.properties`; um release com tag errado não
    consegue sair.
 3. **Envio assinado** — os artefatos são assinados com PGP e enviados à
-   área de staging do Central Portal da Sonatype. As credenciais e a chave
+   API de staging OSSRH da Sonatype. As credenciais e a chave
    de assinatura vêm dos secrets do repositório
    (`MAVEN_REPOSITORY_USERNAME`, `MAVEN_REPOSITORY_PASSWORD`,
    `SIGNING_KEY`, `SIGNING_PASSWORD`); elas nunca vivem no repositório.
-4. **Confirmação manual** — nada se torna público automaticamente: uma
+4. **Promoção ao Portal** — a API de staging mantém o envio em um
+   repositório aberto que o Portal não mostra. O workflow chama a API
+   manual para promovê-lo, fazendo o deployment aparecer em
+   **Publish → Deployments** no Portal.
+5. **Confirmação manual** — nada se torna público automaticamente: uma
    pessoa mantenedora precisa pressionar **Publish** no deployment
    validado em [central.sonatype.com](https://central.sonatype.com). O
    resumo da execução aponta para essa etapa.
-5. Um release do GitHub com notas geradas é criado para o tag.
+6. Um release do GitHub com notas geradas é criado para o tag.

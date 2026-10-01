@@ -55,9 +55,10 @@ Maven Central. Se ejecuta cuando se hace push de un tag de versión
 flowchart LR
     A[Push del tag v*] --> B[Pruebas unitarias + umbral de cobertura]
     B --> C[Verificar tag == VERSION_NAME]
-    C --> D[Firmar y subir al Central Portal]
-    D --> E[Publish manual en central.sonatype.com]
-    D --> F[Release de GitHub con notas generadas]
+    C --> D[Firmar y subir a la API de staging]
+    D --> E[Promover el repositorio de staging al Portal]
+    E --> F[Publish manual en central.sonatype.com]
+    E --> G[Release de GitHub con notas generadas]
 ```
 
 1. **Primero las pruebas** — el release se bloquea si las pruebas
@@ -65,13 +66,17 @@ flowchart LR
 2. **Guarda de versión** — el workflow falla si el tag no coincide con
    `VERSION_NAME` en `gradle.properties`, así un release mal etiquetado no
    puede salir.
-3. **Subida firmada** — los artefactos se firman con PGP y se suben al
-   área de staging del Central Portal de Sonatype. Las credenciales y la
+3. **Subida firmada** — los artefactos se firman con PGP y se suben a la
+   API de staging OSSRH de Sonatype. Las credenciales y la
    llave de firma vienen de los secretos del repositorio
    (`MAVEN_REPOSITORY_USERNAME`, `MAVEN_REPOSITORY_PASSWORD`,
    `SIGNING_KEY`, `SIGNING_PASSWORD`); nunca viven en el repositorio.
-4. **Confirmación manual** — nada se hace público automáticamente: una
+4. **Promoción al Portal** — la API de staging mantiene la subida en un
+   repositorio abierto que el Portal no muestra. El workflow llama a la
+   API manual para promoverlo, lo que hace que el despliegue aparezca en
+   **Publish → Deployments** en el Portal.
+5. **Confirmación manual** — nada se hace público automáticamente: una
    persona mantenedora debe presionar **Publish** sobre el despliegue
    validado en [central.sonatype.com](https://central.sonatype.com). El
    resumen de la ejecución enlaza el paso.
-5. Se crea un release de GitHub con notas generadas para el tag.
+6. Se crea un release de GitHub con notas generadas para el tag.
