@@ -76,7 +76,8 @@ page tout en conservant le formatage et la validation du SDK :
   marque (4 pour Amex, 3 sinon)
 
 Reliez-les à `rememberOpenpayCardFormState()`, qui ne conserve que les
-chiffres, détecte la marque et valide tous les champs :
+chiffres, détecte la marque, limite le numéro de carte à la longueur de la
+marque (15 chiffres pour Amex, 16 sinon) et valide tous les champs :
 
 ```kotlin
 val formState = rememberOpenpayCardFormState()

@@ -27,10 +27,34 @@ class OpenpayCardFormStateTest {
     }
 
     @Test
-    fun `card number input keeps digits only and caps length`() {
+    fun `card number input keeps digits only and caps length at sixteen digits`() {
         formState.updateCardNumber("4111 1111-1111 1111 99999")
 
-        assertEquals("4111111111111111999", formState.cardNumber)
+        assertEquals("4111111111111111", formState.cardNumber)
+    }
+
+    @Test
+    fun `american express card number input caps length at fifteen digits`() {
+        formState.updateCardNumber("3782 822463 10005 99999")
+
+        assertEquals("378282246310005", formState.cardNumber)
+    }
+
+    @Test
+    fun `unrecognized brand card number input caps length at sixteen digits`() {
+        formState.updateCardNumber("6011000000000004999")
+
+        assertEquals("6011000000000004", formState.cardNumber)
+    }
+
+    @Test
+    fun `card number is capped again when an edit turns it into american express`() {
+        formState.updateCardNumber("4111111111111111")
+
+        formState.updateCardNumber("3711111111111111")
+
+        assertEquals(CardBrand.AMERICAN_EXPRESS, formState.detectedBrand)
+        assertEquals("371111111111111", formState.cardNumber)
     }
 
     @Test
@@ -49,6 +73,34 @@ class OpenpayCardFormStateTest {
         formState.updateCardNumber("4111111111111111")
         formState.updateSecurityCode("12345")
         assertEquals("123", formState.securityCode)
+    }
+
+    @Test
+    fun `security code is cut to three digits when the card stops being american express`() {
+        formState.updateCardNumber("378282246310005")
+        formState.updateSecurityCode("1234")
+
+        formState.updateCardNumber("4111111111111111")
+
+        assertEquals("123", formState.securityCode)
+    }
+
+    @Test
+    fun `security code typed before the card number is capped at three digits`() {
+        formState.updateSecurityCode("12345")
+
+        assertEquals("123", formState.securityCode)
+    }
+
+    @Test
+    fun `three digit security code is rejected for american express`() {
+        fillValidCard()
+        formState.updateCardNumber("378282246310005")
+
+        val validatedCard = formState.validate()
+
+        assertNull(validatedCard)
+        assertTrue(formState.isFieldInvalid(CardField.SECURITY_CODE))
     }
 
     @Test

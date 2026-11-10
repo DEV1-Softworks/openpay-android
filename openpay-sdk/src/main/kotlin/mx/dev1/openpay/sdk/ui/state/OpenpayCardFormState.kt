@@ -43,8 +43,17 @@ class OpenpayCardFormState internal constructor(private val clock: Clock) {
         clearFieldError(CardField.HOLDER_NAME)
     }
 
+    /**
+     * Keeps digits only, capped at the length of the brand detected from the
+     * new value: 15 digits for American Express, 16 for every other brand.
+     * A security code typed for the previous brand is cut down to the length
+     * the new brand allows.
+     */
     fun updateCardNumber(newValue: String) {
-        cardNumber = newValue.filter(Char::isDigit).take(MAXIMUM_CARD_NUMBER_LENGTH)
+        val digits = newValue.filter(Char::isDigit)
+        val brand = CardBrand.fromCardNumber(digits)
+        cardNumber = digits.take(brand.cardNumberLength)
+        securityCode = securityCode.take(brand.securityCodeLength)
         clearFieldError(CardField.CARD_NUMBER)
     }
 
@@ -54,6 +63,7 @@ class OpenpayCardFormState internal constructor(private val clock: Clock) {
         clearFieldError(CardField.EXPIRATION)
     }
 
+    /** Keeps digits only, capped at 4 digits for American Express and 3 for every other brand. */
     fun updateSecurityCode(newValue: String) {
         securityCode = newValue.filter(Char::isDigit).take(detectedBrand.securityCodeLength)
         clearFieldError(CardField.SECURITY_CODE)
@@ -94,7 +104,6 @@ class OpenpayCardFormState internal constructor(private val clock: Clock) {
 
     private companion object {
         const val MAXIMUM_HOLDER_NAME_LENGTH = 80
-        const val MAXIMUM_CARD_NUMBER_LENGTH = 19
         const val EXPIRATION_LENGTH = 4
         const val INVALID_DATE_PART = -1
     }

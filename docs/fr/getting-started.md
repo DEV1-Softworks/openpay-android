@@ -25,7 +25,7 @@ Ajoutez la dépendance au fichier `build.gradle.kts` de votre module :
 
 ```kotlin
 dependencies {
-    implementation("mx.dev1.openpay:openpay-sdk:1.0.0")
+    implementation("mx.dev1.openpay:openpay-sdk:1.0.1")
 }
 ```
 

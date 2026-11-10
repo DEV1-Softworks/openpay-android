@@ -74,7 +74,8 @@ formatação e a validação do SDK:
   bandeira (4 para Amex, 3 nos demais casos)
 
 Conecte-os ao `rememberOpenpayCardFormState()`, que guarda apenas dígitos,
-detecta a bandeira e valida todos os campos:
+detecta a bandeira, limita o número do cartão ao comprimento da bandeira
+(15 dígitos para Amex, 16 nos demais casos) e valida todos os campos:
 
 ```kotlin
 val formState = rememberOpenpayCardFormState()
