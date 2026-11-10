@@ -1,13 +1,14 @@
 package mx.dev1.openpay.sdk.domain.validation
 
 /**
- * Card brands recognized by the SDK, with the security code length each one uses.
+ * Card brands recognized by the SDK, with the card number and security code
+ * lengths each one uses.
  */
-enum class CardBrand(val securityCodeLength: Int) {
-    VISA(securityCodeLength = 3),
-    MASTERCARD(securityCodeLength = 3),
-    AMERICAN_EXPRESS(securityCodeLength = 4),
-    UNKNOWN(securityCodeLength = 3);
+enum class CardBrand(val cardNumberLength: Int, val securityCodeLength: Int) {
+    VISA(cardNumberLength = 16, securityCodeLength = 3),
+    MASTERCARD(cardNumberLength = 16, securityCodeLength = 3),
+    AMERICAN_EXPRESS(cardNumberLength = 15, securityCodeLength = 4),
+    UNKNOWN(cardNumberLength = 16, securityCodeLength = 3);
 
     companion object {
 

@@ -1,11 +1,13 @@
 package mx.dev1.openpay.sdk.ui.components
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import mx.dev1.openpay.sdk.domain.model.Card
 import mx.dev1.openpay.sdk.ui.theme.OpenpayTheme
 import org.junit.Assert.assertEquals
@@ -89,6 +91,58 @@ class OpenpayCardFormComposeTest {
             .performTextInput("41111111")
 
         composeRule.onNodeWithText("4111 1111").assertIsDisplayed()
+    }
+
+    @Test
+    fun `card number stops accepting digits after the sixteenth`() {
+        renderForm()
+
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_NUMBER_FIELD)
+            .performTextInput("4111111111111111999")
+
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_NUMBER_FIELD)
+            .assertTextContains("4111 1111 1111 1111")
+    }
+
+    @Test
+    fun `american express card number stops accepting digits after the fifteenth`() {
+        renderForm()
+
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_NUMBER_FIELD)
+            .performTextInput("378282246310005999")
+
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_NUMBER_FIELD)
+            .assertTextContains("3782 822463 10005")
+    }
+
+    @Test
+    fun `american express security code accepts four digits`() {
+        renderForm()
+        fillValidCard()
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_NUMBER_FIELD)
+            .performTextReplacement("378282246310005")
+        composeRule.onNodeWithTag(OpenpayFormTags.SECURITY_CODE_FIELD)
+            .performTextReplacement("12345")
+
+        composeRule.onNodeWithTag(OpenpayFormTags.SUBMIT_BUTTON).performClick()
+
+        assertEquals("1234", checkNotNull(validatedCard).securityCode)
+    }
+
+    @Test
+    fun `security code shrinks to three digits when the card stops being american express`() {
+        renderForm()
+        fillValidCard()
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_NUMBER_FIELD)
+            .performTextReplacement("378282246310005")
+        composeRule.onNodeWithTag(OpenpayFormTags.SECURITY_CODE_FIELD)
+            .performTextReplacement("1234")
+        composeRule.onNodeWithTag(OpenpayFormTags.CARD_NUMBER_FIELD)
+            .performTextReplacement("4111111111111111")
+
+        composeRule.onNodeWithTag(OpenpayFormTags.SUBMIT_BUTTON).performClick()
+
+        assertEquals("123", checkNotNull(validatedCard).securityCode)
     }
 
     @Test
