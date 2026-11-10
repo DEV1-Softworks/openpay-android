@@ -34,7 +34,7 @@ Openpay and never touches your servers.
 
 ```kotlin
 dependencies {
-    implementation("mx.dev1.openpay:openpay-sdk:1.0.0")
+    implementation("mx.dev1.openpay:openpay-sdk:1.0.1")
 }
 ```
 

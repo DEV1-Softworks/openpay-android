@@ -71,6 +71,14 @@ class CardBrandTest {
     }
 
     @Test
+    fun `american express card numbers have fifteen digits, the rest sixteen`() {
+        assertEquals(15, CardBrand.AMERICAN_EXPRESS.cardNumberLength)
+        assertEquals(16, CardBrand.VISA.cardNumberLength)
+        assertEquals(16, CardBrand.MASTERCARD.cardNumberLength)
+        assertEquals(16, CardBrand.UNKNOWN.cardNumberLength)
+    }
+
+    @Test
     fun `american express expects four digit security codes, the rest three`() {
         assertEquals(4, CardBrand.AMERICAN_EXPRESS.securityCodeLength)
         assertEquals(3, CardBrand.VISA.securityCodeLength)
