@@ -23,7 +23,7 @@ Add the dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("mx.dev1.openpay:openpay-sdk:1.0.0")
+    implementation("mx.dev1.openpay:openpay-sdk:1.0.1")
 }
 ```
 

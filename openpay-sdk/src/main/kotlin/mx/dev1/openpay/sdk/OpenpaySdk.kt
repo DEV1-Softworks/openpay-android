@@ -6,7 +6,7 @@ package mx.dev1.openpay.sdk
 object OpenpaySdk {
 
     /** Version reported to the Openpay API through the user agent. */
-    const val VERSION: String = "1.0.0"
+    const val VERSION: String = "1.0.1"
 
     /** User agent sent on every HTTP request made by the SDK. */
     val userAgent: String = buildUserAgent(VERSION)
